@@ -1,5 +1,6 @@
 package main
 
+// import necessary dependencies
 import (
 	"encoding/json"
 	"fmt"
@@ -22,6 +23,7 @@ type Player struct {
 	BrlPa         float64 `json:"brl_pa"`
 }
 
+// declare global Players array that we can populate in main func to simulate database
 var Players []Player
 
 func homePage(w http.ResponseWriter, r *http.Request) {
@@ -32,6 +34,8 @@ func getAllPlayers(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(Players)
 }
 
+// create new instance of mux router
+// for loop to go thru all players, if name equals the key passed in, then return player encoded in JSON
 func getPlayer(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	key := vars["name"]
@@ -42,6 +46,7 @@ func getPlayer(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// get Body of POST request, unmarshal into new Player struct and append to Players array
 func createPlayer(w http.ResponseWriter, r *http.Request) {
 	reqBody, _ := ioutil.ReadAll(r.Body)
 	var player Player
@@ -50,6 +55,7 @@ func createPlayer(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(player)
 }
 
+// loop through all players, check if player parameter matches name, and update array to remove player
 func deletePlayer(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	Name := vars["name"]
@@ -60,6 +66,7 @@ func deletePlayer(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// add all routes and call functions
 func apiRequests() {
 	route := mux.NewRouter().StrictSlash(true)
 	route.HandleFunc("/", homePage)
@@ -70,6 +77,7 @@ func apiRequests() {
 	log.Fatal(http.ListenAndServe(":3000", route))
 }
 
+// attach data to pull from and call API request func
 func main() {
 	Players = []Player{
 		Player{Name: "Shohei Ohtani",
